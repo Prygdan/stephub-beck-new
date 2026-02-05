@@ -22,7 +22,6 @@ class FavoritesController extends Controller
     {
         $sessionId = Session::getId();
         $productId = $request->input('product_id');
-        $user = $request->user();
 
         $query = Favorite::where('product_id', $productId);
         $query->where('session_id', $sessionId);
@@ -36,7 +35,7 @@ class FavoritesController extends Controller
             return response()->json($existingFavorite, 200); 
         } else {
             $favorite = Favorite::create([
-                'session_id' => $user ? null : $sessionId,
+                'session_id' => $sessionId,
                 'product_id' => $productId
             ]);
 

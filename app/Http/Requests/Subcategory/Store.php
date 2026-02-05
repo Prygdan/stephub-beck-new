@@ -54,6 +54,8 @@ class Store extends FormRequest
     
     protected function nameUniqueRule() 
     {
-        return Rule::unique(Subcategory::class, 'name');
+        return Rule::unique('subcategories', 'name')->where(function ($query) {
+            return $query->where('category_id', $this->category_id);
+        });
     }
 }

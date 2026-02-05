@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UploadProductsImage\Store;
-use App\Http\Requests\UploadProductsImage\StoreRequest;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Product;
 
@@ -19,28 +18,37 @@ class UploadProductsImageController extends Controller
 
     public function store(Store $request)
     {
-        // Отримуємо валідовані дані
-        $data = $request->validated();
-        $imageData = $data['image'];
-        $productId = $data['product_id'];
+        $validated = $request->validated();
 
-        // Шукаємо продукт
-        $product = Product::find($productId);
-        if (!$product) {
-            return response()->json(['error' => 'Product not found'], 404);
+        $imageData = $validated['image'];
+        $productId = $validated['product_id'];
+
+        $product = Product::findOrFail($productId);
+
+        // 1. Витягуємо base64
+        [, $base64] = explode(',', $imageData);
+        $binary = base64_decode($base64);
+
+        // 2. Створюємо image resource
+        $image = imagecreatefromstring($binary);
+
+        if ($image === false) {
+            return response()->json(['error' => 'Invalid image data'], 422);
         }
 
-        // Розділяємо та декодуємо base64-зображення
-        list($type, $data) = explode(';', $imageData);
-        list(, $data) = explode(',', $data);
-        $data = base64_decode($data);
+        // 3. Генеруємо шлях
+        $fileName = 'products/' . uniqid('', true) . '.webp';
+        $fullPath = storage_path('app/public/' . $fileName);
 
-        // Генеруємо унікальне ім'я файлу та зберігаємо його
-        $fileName = 'products/' . uniqid() . '.webp';
-        Storage::disk('public')->put($fileName, $data);
+        // 4. Конвертуємо в WebP (ВАЖЛИВО)
+        imagewebp($image, $fullPath, 90); // 85–90 оптимально
 
-        // Зберігаємо шлях до зображення в таблиці продуктів
-        $product->images()->create(['image' => $fileName]);
+        imagedestroy($image);
+
+        // 5. Зберігаємо в БД
+        $product->images()->create([
+            'image' => $fileName,
+        ]);
 
         return response()->json(['image' => $fileName], 201);
     }

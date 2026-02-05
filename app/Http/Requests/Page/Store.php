@@ -24,18 +24,24 @@ class Store extends FormRequest
     public function rules(): array
     {
         return [
-            'slug'      =>  ['required', 'min:2', 'max:256', $this->slugUniqueRule()],
-            'title'     =>  ['required', 'string', 'min:2', 'max:256'],
-            'content'   =>  ['nullable', 'string']
+            'slug'              =>  ['required', 'min:2', 'max:256', $this->slugUniqueRule()],
+            'title'             =>  ['required', 'string', 'min:2', 'max:256'],
+            'content'           =>  ['nullable', 'string'],
+            'meta_title'        => ['nullable', 'string'],
+            'meta_description'  => ['nullable', 'string'],
+            'meta_keywords'     => ['nullable', 'string'],
         ];
     }
 
     public function attributes()
     {
         return [
-            'slug'      =>  'URL',
-            'title'     =>  'Заголовок',
-            'content'   =>  'Контент'
+            'slug'              =>  'URL',
+            'title'             =>  'Заголовок',
+            'content'           =>  'Контент',
+            'meta_title'        =>  'Title',
+            'meta_description'  =>  'Description',
+            'meta_keywords'     =>  'Keywords',
         ];
     }
 

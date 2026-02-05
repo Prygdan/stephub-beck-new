@@ -54,7 +54,7 @@ class ProductController extends Controller
         }
 
         DB::transaction(function() use($product, $data) {
-            $product->save(); // <-- ПЕРШЕ зберігаємо
+            $product->save();
 
             if ($data->has('sizes')) {
                 $product->sizes()->sync($data->get('sizes'));

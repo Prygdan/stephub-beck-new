@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('brands', function(Blueprint $table) {
-            $table->json('allowed_filters')->after('in_popular')->nullable();
+        Schema::table('pages', function (Blueprint $table) {
+            $table->text('meta_description')->text('meta_description', 2000)->nullable()->change();
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('brands', function(Blueprint $table) {
-            $table->dropColumn('allowed_filters');
+        Schema::table('pages', function (Blueprint $table) {
+            $table->text('meta_description')->text('meta_description', 2000)->change();
         });
     }
 };
