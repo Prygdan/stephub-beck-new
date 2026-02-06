@@ -27,9 +27,9 @@ class Store extends FormRequest
             'slug'              =>  ['required', 'min:2', 'max:256', $this->slugUniqueRule()],
             'title'             =>  ['required', 'string', 'min:2', 'max:256'],
             'content'           =>  ['nullable', 'string'],
-            'meta_title'        => ['nullable', 'string'],
-            'meta_description'  => ['nullable', 'string'],
-            'meta_keywords'     => ['nullable', 'string'],
+            'meta_title'        =>  ['nullable', 'string'],
+            'meta_description'  =>  ['nullable', 'string'],
+            'meta_keywords'     =>  ['nullable', 'string'],
         ];
     }
 

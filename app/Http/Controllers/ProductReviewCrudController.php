@@ -9,7 +9,9 @@ class ProductReviewCrudController extends Controller
 {
     public function index()
     {
-        $reviews = ProductReview::with(['product', 'product.images', 'user', 'answer'])->paginate(30);
+        $reviews = ProductReview::with(['product', 'product.images', 'user', 'answer'])
+                                ->orderBy('created_at', 'desc')
+                                ->paginate(30);
 
         return response()->json($reviews, 200);
     }

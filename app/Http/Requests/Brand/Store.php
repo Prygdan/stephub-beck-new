@@ -29,6 +29,10 @@ class Store extends FormRequest
             'in_popular'        =>  ['nullable', 'boolean'],
             'allowed_filters'   =>  ['nullable', 'array'],
             'allowed_filters.*' =>  ['string'],
+            'description'       =>  ['string', 'nullable', 'min:2', 'max:5000'],
+            'meta_title'        =>  ['nullable', 'string'],
+            'meta_description'  =>  ['nullable', 'string'],
+            'meta_keywords'     =>  ['nullable', 'string'],
         ];
     }
 
@@ -38,7 +42,10 @@ class Store extends FormRequest
             'name'              => 'Назва',
             'image'             => 'Зображення',
             'in_popular'        => 'В списку популярні',
-            'allowed_filters'   =>  'Пункти фільтрації',
+            'allowed_filters'   => 'Пункти фільтрації',
+            'meta_title'        => 'Title',
+            'meta_description'  => 'Description',
+            'meta_keywords'     => 'Keywords',
         ];
     }
     
