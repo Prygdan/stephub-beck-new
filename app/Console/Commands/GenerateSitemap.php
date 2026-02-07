@@ -25,20 +25,24 @@ class GenerateSitemap extends Command
                 ->setChangeFrequency(Url::CHANGE_FREQUENCY_DAILY)
                 ->setPriority(1.0));
 
-        $categories = Category::all();
-        foreach ($categories as $item) {
-            $sitemap->add(Url::create("https://stephub.store/{$item->slug}")
-                ->setLastModificationDate($item->updated_at)
-                ->setChangeFrequency(Url::CHANGE_FREQUENCY_DAILY)
-                ->setPriority(0.9));
+        $categories = Category::with(['subcategories' => function ($query) {
+            $query->orderBy('name');
+        }])->orderBy('id', 'asc')->get();
+    
+        foreach ($categories as $category) {
+            // Категорія
+            $sitemap->add(Url::create('https://stephub.store/' . "/{$category->slug}")
+                ->setLastModificationDate($category->updated_at)
+                ->setPriority(0.8));
+    
+            // Підкатегорії
+            foreach ($category->subcategories as $subcategory) {
+                $sitemap->add(Url::create('https://stephub.store/' . "/{$category->slug}/{$subcategory->slug}")
+                    ->setLastModificationDate($subcategory->updated_at)
+                    ->setPriority(0.7));
+            }
         }
-        $subcategories = Subcategory::all();
-        foreach ($subcategories as $item) {
-            $sitemap->add(Url::create("https://stephub.store/{$item->slug}")
-                ->setLastModificationDate($item->updated_at)
-                ->setChangeFrequency(Url::CHANGE_FREQUENCY_DAILY)
-                ->setPriority(0.9));
-        }
+
         $brands = Brand::all();
         foreach ($brands as $item) {
             $sitemap->add(Url::create("https://stephub.store/brand/{$item->slug}")
