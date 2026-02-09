@@ -57,13 +57,23 @@ class GenerateSitemap extends Command
                 ->setChangeFrequency(Url::CHANGE_FREQUENCY_DAILY)
                 ->setPriority(0.8));
         }
-        $pages = Page::all();
+        /* $pages = Page::all();
         foreach ($pages as $item) {
             $sitemap->add(Url::create("https://stephub.store/{$item->slug}")
                 ->setLastModificationDate($item->updated_at)
                 ->setChangeFrequency(Url::CHANGE_FREQUENCY_DAILY)
                 ->setPriority(0.8));
-        }
+        } */
+        $sitemap->add(Url::create("https://stephub.store/about")
+            ->setLastModificationDate($item->updated_at)
+            ->setChangeFrequency(Url::CHANGE_FREQUENCY_DAILY)
+            ->setPriority(0.8));
+
+        $sitemap->add(Url::create("https://stephub.store/delivery-and-payment")
+            ->setLastModificationDate($item->updated_at)
+            ->setChangeFrequency(Url::CHANGE_FREQUENCY_DAILY)
+            ->setPriority(0.8));
+
         $sitemap->add(Url::create('https://stephub.store/404')
             ->setLastModificationDate(Carbon::now())
             ->setChangeFrequency(Url::CHANGE_FREQUENCY_MONTHLY)
