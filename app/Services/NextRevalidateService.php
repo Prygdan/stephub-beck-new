@@ -10,7 +10,7 @@ class NextRevalidateService
   {
     Http::timeout(3)
         ->post(
-            rtrim(config('services.next.frontend_url'), '/') . '/api/revalidate',
+            rtrim(config('services.next.frontend_url'), '/') . '/revalidate',
             [
                 'secret' => config('services.next.revalidate_secret'),
                 'tags'   => $tags,
