@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Carousel\Store;
 use Illuminate\Support\Facades\DB;
 use App\Models\Carousel;
+use App\Services\NextRevalidateService;
 
 class CarouselController extends Controller
 {
@@ -30,7 +31,7 @@ class CarouselController extends Controller
         return response()->json($carousel, 200);
     }
 
-    public function store(Store $request)
+    public function store(Store $request, NextRevalidateService $revalidate)
     {
         try {
             DB::beginTransaction();
@@ -58,6 +59,10 @@ class CarouselController extends Controller
                     'image_mobile'  => $pathMobile,
                 ]);
             };
+            $revalidate->tags([
+                'category',
+                'category-get',
+            ]);
             DB::commit();
 
             return response()->json([
@@ -71,7 +76,7 @@ class CarouselController extends Controller
         }
     }
     
-    public function destroy(Carousel $carousel)
+    public function destroy(Carousel $carousel, NextRevalidateService $revalidate)
     {
         try {
             foreach($carousel->items as $item) 
@@ -87,6 +92,11 @@ class CarouselController extends Controller
 
             $carousel->items()->delete();
             $carousel->delete();
+
+            $revalidate->tags([
+                'category',
+                'category-get',
+            ]);
             
             return response()->noContent(200);
         } catch (\Exception $e) {

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Traits;
 
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 trait HandlesBase64Image

@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Product;
+use App\Services\NextRevalidateService;
 
 class ProductController extends Controller
 {
@@ -44,7 +45,7 @@ class ProductController extends Controller
         return response()->json($product, 200);
     }
 
-    public function store(Store $request)
+    public function store(Store $request, NextRevalidateService $revalidate)
     {
         $data = collect($this->sanitizeData($request->validated()));
         $product = Product::make($data->except(['sizes'])->toArray());
@@ -61,10 +62,17 @@ class ProductController extends Controller
             }
         });
 
+        $revalidate->tags([
+            'category',
+            'category-get',
+            'subcategory',
+            'discountProducts'
+        ]);
+
         return response()->json($product->load('sizes'), 200);
     }
 
-    public function update(Update $request, Product $product) 
+    public function update(Update $request, Product $product, NextRevalidateService $revalidate) 
     {   
         $data = collect($this->sanitizeData($request->validated()));
 
@@ -77,10 +85,17 @@ class ProductController extends Controller
             $product->save();
         });
 
+        $revalidate->tags([
+            'category',
+            'category-get',
+            'subcategory',
+            'discountProducts'
+        ]);
+
         return response()->json($product, 200);
     }
 
-    public function destroy(Product $product)
+    public function destroy(Product $product, NextRevalidateService $revalidate)
     {
         $imagesPath = $product->images->pluck('image');
 
@@ -92,6 +107,12 @@ class ProductController extends Controller
 
         $product->images()->delete();
         $product->delete();
+        $revalidate->tags([
+            'category',
+            'category-get',
+            'subcategory',
+            'discountProducts'
+        ]);
 
         return response()->json($product, 200);
     }
@@ -101,13 +122,10 @@ class ProductController extends Controller
         $validated = $request->validate([
             'query' => ['required', 'string', 'min:2', 'max:10'],
         ]);
-    
         $query = $validated['query'];
     
         return Product::where('name', 'LIKE', "%{$query}%")
-            ->with([
-                'images'
-                ])
+            ->with(['images'])
             ->limit(10)
             ->get();
     }   

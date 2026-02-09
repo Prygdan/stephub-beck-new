@@ -14,6 +14,7 @@ use App\Models\Subcategory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Services\NextRevalidateService;
 
 class CategoryController extends Controller
 {
@@ -113,12 +114,18 @@ class CategoryController extends Controller
         ]);
     }
 
-    public function store(Store $request): JsonResponse
+    public function store(Store $request, NextRevalidateService $revalidate): JsonResponse
     {
+        $revalidate->tags([
+            'category',
+            'category-get',
+            'subcategory'
+        ]);
+
         return response()->json(Category::create($request->validated()), 200);
     }
 
-    public function update(Update $request, Category $category): JsonResponse
+    public function update(Update $request, Category $category, NextRevalidateService $revalidate): JsonResponse
     {
         $category->fill($request->validated());
 
@@ -127,13 +134,22 @@ class CategoryController extends Controller
         }
 
         $category->save();
+        $revalidate->tags([
+            'category',
+            'category-get',
+            'subcategory'
+        ]);
 
         return response()->json($category, 200);
     }
 
-    public function destroy(Category $category)
+    public function destroy(Category $category, NextRevalidateService $revalidate)
     {
         $category->delete();
+        $revalidate->tags([
+            'category',
+            'category-get',
+        ]);
 
         return response()->noContent();
     }

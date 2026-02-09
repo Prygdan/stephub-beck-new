@@ -34,5 +34,10 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+    
+    'next' => [
+        'frontend_url'      => env('FRONTEND_URL'),
+        'revalidate_secret' => env('NEXT_REVALIDATE_SECRET'),
+    ],
 
 ];

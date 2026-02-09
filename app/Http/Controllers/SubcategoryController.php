@@ -12,6 +12,7 @@ use App\Models\Season;
 use App\Models\Size;
 use Illuminate\Http\JsonResponse;
 use App\Models\Subcategory;
+use App\Services\NextRevalidateService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -110,14 +111,19 @@ class SubcategoryController extends Controller
         ]);
     }
 
-    public function store(Store $request): JsonResponse
+    public function store(Store $request, NextRevalidateService $revalidate): JsonResponse
     {
         $subcategory = Subcategory::create($request->validated());
+        $revalidate->tags([
+            'category',
+            'category-get',
+            'subcategory'
+        ]);
 
         return response()->json($subcategory, 201);
     }
 
-    public function update(Update $request, Subcategory $subcategory): JsonResponse
+    public function update(Update $request, Subcategory $subcategory, NextRevalidateService $revalidate): JsonResponse
     {
         $subcategory->fill($request->validated());
 
@@ -126,13 +132,23 @@ class SubcategoryController extends Controller
         }
 
         $subcategory->save();
+        $revalidate->tags([
+            'category',
+            'category-get',
+            'subcategory'
+        ]);
 
         return response()->json($subcategory, 200);
     }
 
-    public function destroy(Subcategory $subcategory)
+    public function destroy(Subcategory $subcategory, NextRevalidateService $revalidate)
     {
         $subcategory->delete();
+        $revalidate->tags([
+            'category',
+            'category-get',
+            'subcategory'
+        ]);
 
         return response()->noContent(200);
     }

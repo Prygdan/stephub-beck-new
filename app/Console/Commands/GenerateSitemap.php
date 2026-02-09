@@ -31,13 +31,13 @@ class GenerateSitemap extends Command
     
         foreach ($categories as $category) {
             // Категорія
-            $sitemap->add(Url::create('https://stephub.store/' . "/{$category->slug}")
+            $sitemap->add(Url::create('https://stephub.store/' . "{$category->slug}")
                 ->setLastModificationDate($category->updated_at)
                 ->setPriority(0.8));
     
             // Підкатегорії
             foreach ($category->subcategories as $subcategory) {
-                $sitemap->add(Url::create('https://stephub.store/' . "/{$category->slug}/{$subcategory->slug}")
+                $sitemap->add(Url::create('https://stephub.store/' . "{$category->slug}/{$subcategory->slug}")
                     ->setLastModificationDate($subcategory->updated_at)
                     ->setPriority(0.7));
             }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\ProductReview;
 use App\Http\Requests\ProductReview\Store;
+use App\Services\NextRevalidateService;
 use Illuminate\Support\Facades\Auth;
 
 class ProductReviewController extends Controller
@@ -20,8 +21,7 @@ class ProductReviewController extends Controller
         ], 200);
     }
 
-
-    public function store(Store $request, Product $product)
+    public function store(Store $request, Product $product, NextRevalidateService $revalidate)
     {
         $data = $request->validated();
 
@@ -34,6 +34,10 @@ class ProductReviewController extends Controller
 
         $data['product_id'] = $product->id;
         $review = ProductReview::create($data);
+
+        $revalidate->tags([
+            'reviews',
+        ]);
 
         return response()->json([
             'message'   =>  'Відгук успішно додано.',

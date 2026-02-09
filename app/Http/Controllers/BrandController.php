@@ -12,6 +12,7 @@ use App\Models\Material;
 use App\Models\Season;
 use App\Models\Size;
 use App\Models\Subcategory;
+use App\Services\NextRevalidateService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -56,7 +57,7 @@ class BrandController extends Controller
         ]);
     }
 
-    public function store(Store $request): JsonResponse
+    public function store(Store $request, NextRevalidateService $revalidate): JsonResponse
     {
         try {
             DB::beginTransaction();
@@ -69,6 +70,10 @@ class BrandController extends Controller
 
             $data['slug'] = Str::slug($data['name']);
             $brand = Brand::create($data);
+            $revalidate->tags([
+                'brand',
+                'brand-get',
+            ]);
             DB::commit();
 
             return response()->json($brand, 200);
@@ -82,7 +87,7 @@ class BrandController extends Controller
         }
     }
 
-    public function update(Update $request, Brand $brand): JsonResponse
+    public function update(Update $request, Brand $brand, NextRevalidateService $revalidate): JsonResponse
     {
         try {
             DB::beginTransaction();
@@ -104,6 +109,10 @@ class BrandController extends Controller
 
             $data['slug'] = Str::slug($data['name']);
             $brand->update($data);
+            $revalidate->tags([
+                'brand',
+                'brand-get',
+            ]);
             DB::commit();
 
             return response()->json($brand, 200);
@@ -117,14 +126,18 @@ class BrandController extends Controller
         }
     }
 
-    public function destroy(Brand $brand)
+    public function destroy(Brand $brand, NextRevalidateService $revalidate)
     {
         try {
             if ($brand->image) {
                 Storage::disk('public')->delete(str_replace('storage/', '', $brand->image));
             }
             $brand->delete();
-
+            $revalidate->tags([
+                'brand',
+                'brand-get',
+            ]);
+            
             return response()->noContent();
         } catch (\Exception $e) {
             return response()->json([
