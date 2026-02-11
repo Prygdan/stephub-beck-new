@@ -19,7 +19,7 @@ class ProductController extends Controller
     {
         $products = Product::with([
             'category', 'subcategory', 'brand', 'season', 'material', 'images', 'sizes'
-                ])->orderBy('created_at', 'asc')
+                ])->orderBy('created_at', 'desc')
                 ->paginate(12);
 
         return response()->json($products, 200);
